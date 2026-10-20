@@ -1,0 +1,424 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111e">
+<title>المساعد الجامعي | مكتبة المجسمات ثلاثية الأبعاد</title>
+
+<style>
+:root{--bg:#06101d;--cyan:#5be8f5;--blue:#398bff;--text:#f3f8ff;--muted:#96abc0}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{position:relative;isolation:isolate;margin:0;min-height:100vh;overflow-x:hidden;font-family:Arial,Tahoma,sans-serif;color:var(--text);background:#06101d}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+.animated-background{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 15% 0%,#123c60 0%,transparent 43%),radial-gradient(ellipse at 95% 72%,#102d4a 0%,transparent 40%),linear-gradient(145deg,#050b15,#09192a 52%,#06101d)}
+.ambient{position:absolute;width:300px;height:300px;border-radius:50%;filter:blur(75px);opacity:.22;will-change:transform}
+.ambient-one{top:-100px;left:-100px;background:#087bff;animation:driftOne 17s ease-in-out infinite alternate}
+.ambient-two{right:-120px;top:30%;background:#00d9ed;animation:driftTwo 21s ease-in-out infinite alternate}
+.ambient-three{bottom:-150px;left:25%;background:#554cff;animation:driftThree 19s ease-in-out infinite alternate}
+.light-beam{position:absolute;width:150%;height:1px;left:-25%;opacity:.18;background:linear-gradient(90deg,transparent,#42dcff,#458cff,transparent);box-shadow:0 0 12px #42dcff}
+.beam-one{top:32%;animation:beamOne 15s linear infinite}
+.beam-two{top:72%;opacity:.1;animation:beamTwo 19s linear infinite}
+#particleField{position:absolute;inset:0;overflow:hidden}
+.particle{position:absolute;bottom:-20px;width:var(--size,3px);height:var(--size,3px);border-radius:50%;background:#73edff;opacity:0;box-shadow:0 0 10px #42dfff;animation:rise var(--duration,12s) linear infinite;animation-delay:var(--delay,0s)}
+
+.page{width:min(100%,760px);margin:auto;padding:16px 15px 30px}
+.news-bar{position:relative;display:flex;align-items:center;height:48px;margin-bottom:15px;overflow:hidden;border:1px solid #3a8098;border-radius:15px;background:linear-gradient(110deg,#0b2034,#12344b 50%,#0b1b2d);box-shadow:0 7px 24px #00c8ff12,inset 0 0 18px #37dfff0b}
+.news-bar::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 15%,#53e8ff0d 50%,transparent 85%);animation:tickerShine 5s ease-in-out infinite}
+.news-label{position:relative;z-index:1;align-self:stretch;flex-shrink:0;display:flex;align-items:center;gap:7px;padding:0 13px;color:#061522;background:linear-gradient(135deg,#5cf0ed,#70baff);font-size:11px;font-weight:800;box-shadow:5px 0 16px #0002}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#087f9b;animation:blink 1.2s infinite}
+.ticker{position:relative;flex:1;min-width:0;height:100%;overflow:hidden}
+.ticker-track{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+.ticker-text{position:absolute;max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e2fbff;font-size:12px;font-weight:700;text-shadow:0 0 12px #38dfff33;animation:tickerRepeat 3s ease-in-out infinite}
+
+.header{position:relative;display:flex;align-items:center;gap:13px;padding:18px 15px;margin-bottom:22px;overflow:hidden;border:1px solid #29465f;border-radius:19px;background:linear-gradient(120deg,rgba(20,45,70,.95),rgba(11,25,41,.94));box-shadow:0 12px 30px #00000020}
+.header::before{content:"";position:absolute;top:-80px;left:-60px;width:180px;height:180px;border-radius:50%;background:#36dfff1c;filter:blur(24px);animation:glowPulse 4s ease-in-out infinite alternate;pointer-events:none}
+.logo{position:relative;display:grid;place-items:center;flex-shrink:0;width:58px;height:58px;border-radius:17px;font-size:29px;background:linear-gradient(145deg,#1c76a8,#163452);border:1px solid #55e8f44a;box-shadow:0 0 22px #28b7ee20;animation:logoFloat 3s ease-in-out infinite}
+.header-text{position:relative;min-width:0;flex:1}
+.header-text h1{margin:0;font-size:22px;line-height:1.5;background:linear-gradient(90deg,#55e8f4,#fff,#7d9dff,#55e8f4);background-size:300% auto;color:transparent;background-clip:text;-webkit-background-clip:text;animation:colors 6s linear infinite}
+.subtitle{margin-top:5px;color:#a8c4dc;font-size:11px;line-height:1.7}
+.bot-id{display:inline-flex;align-items:center;gap:7px;direction:ltr;margin-top:9px;padding:6px 9px;border-radius:9px;border:1px solid #43b9dc3a;background:#0b2539;color:#7de9ff;font-size:11px;transition:.2s}
+.bot-id:hover{border-color:var(--cyan);box-shadow:0 0 14px #55e8f425}
+.bot-id:active{transform:scale(.95)}
+.status{position:relative;align-self:flex-start;flex-shrink:0;padding:6px 8px;border-radius:8px;background:#123c3a;color:#7ef4c5;font-size:9px}
+
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 2px 13px}
+.section-title h2{margin:0;font-size:16px}
+.section-title span{color:var(--muted);font-size:10px}
+.model-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+
+.model-button{position:relative;display:flex;align-items:center;gap:9px;min-width:0;min-height:78px;padding:11px;text-align:right;color:var(--text);border:1px solid #253f58;border-radius:15px;background:linear-gradient(145deg,#13283e,#0d1b2b);overflow:hidden;isolation:isolate;transition:border-color .25s,transform .2s,background .25s,box-shadow .25s;animation:buttonAppear .5s both}
+.model-button:nth-child(2){animation-delay:.05s}
+.model-button:nth-child(3){animation-delay:.1s}
+.model-button:nth-child(4){animation-delay:.15s}
+.model-button:nth-child(5){animation-delay:.2s}
+.model-button:nth-child(6){animation-delay:.25s}
+.model-button:nth-child(7){animation-delay:.3s}
+.model-button:nth-child(8){animation-delay:.35s}
+.model-button:nth-child(9){animation-delay:.4s}
+.model-button::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;right:0;width:3px;background:linear-gradient(#55e8f4,#278bff);opacity:.8;transition:width .25s}
+.model-button::after{content:"";position:absolute;top:-70%;left:-70%;width:40%;height:240%;transform:rotate(25deg);background:linear-gradient(transparent,#ffffff0d,#55e8f420,transparent);transition:left .5s ease;pointer-events:none}
+.model-button:hover{transform:translateY(-3px);border-color:#4bbfe0;background:linear-gradient(145deg,#193b58,#10263a);box-shadow:0 7px 22px #008bff20}
+.model-button:hover::before{width:5px}
+.model-button:hover::after{left:120%}
+.model-button:active{transform:scale(.96);box-shadow:0 0 24px #55e8f455}
+.model-icon{display:grid;place-items:center;flex-shrink:0;width:42px;height:42px;border:1px solid #2a5876;border-radius:12px;background:linear-gradient(145deg,#173f5c,#10283e);font-size:22px;transition:transform .25s,box-shadow .25s}
+.model-button:hover .model-icon{transform:scale(1.08) rotate(-4deg);box-shadow:0 0 15px #55e8f422}
+.model-info{min-width:0;flex:1}
+.model-name{display:block;margin:0;font-size:12px;font-weight:bold;direction:ltr;text-align:right;overflow-wrap:anywhere}
+.model-translation{display:block;margin-top:6px;color:var(--cyan);font-size:11px;line-height:1.5}
+.model-arrow{flex-shrink:0;color:#83c9e6;font-size:18px;transition:transform .2s}
+.model-button:hover .model-arrow{transform:translateX(-4px)}
+
+.footer{text-align:center;margin-top:25px;padding-top:17px;border-top:1px solid #1b3044;color:#829ab0;font-size:11px;line-height:1.9}
+.footer strong{display:inline-block;background:linear-gradient(90deg,#55e8f4,#fff,#7d9dff);background-size:200% auto;color:transparent;background-clip:text;-webkit-background-clip:text;animation:colors 5s linear infinite}
+
+#modelScreen{display:none;position:fixed;inset:0;width:100%;height:100%;height:100dvh;z-index:9999;background:#050b14;overflow:hidden;direction:ltr}
+#modelScreen.open{display:block;animation:viewerIn .22s ease-out}
+.model-frame{position:absolute;inset:0;overflow:hidden;background:#050b14}
+.model-frame iframe{position:absolute;top:-65px;left:0;width:100%;height:calc(100% + 130px);border:0;background:#050b14}
+.close-btn{position:absolute;top:12px;right:12px;z-index:10000;width:46px;height:46px;display:grid;place-items:center;border:1px solid #ffffff55;border-radius:50%;background:#172536ed;color:white;font-size:32px;box-shadow:0 4px 15px #0005;transition:transform .25s,background .25s}
+.close-btn:hover{background:#164e63;transform:rotate(90deg)}
+.toast{position:fixed;bottom:22px;left:50%;z-index:12000;transform:translate(-50%,20px);opacity:0;pointer-events:none;padding:11px 17px;border:1px solid #55e8f455;border-radius:12px;background:#10283df5;color:#dffbff;font-size:12px;box-shadow:0 8px 28px #0005;transition:.25s;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@keyframes tickerRepeat{0%{opacity:0;transform:translateX(24px)}12%{opacity:1;transform:translateX(0)}82%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(-18px)}}
+@keyframes tickerShine{0%,100%{transform:translateX(-60%);opacity:.35}50%{transform:translateX(60%);opacity:1}}
+@keyframes colors{from{background-position:0% center}to{background-position:300% center}}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 8px #087f9b}50%{opacity:.35;box-shadow:none}}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes glowPulse{from{opacity:.45;transform:scale(.9)}to{opacity:1;transform:scale(1.15)}}
+@keyframes buttonAppear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes viewerIn{from{opacity:.6}to{opacity:1}}
+@keyframes driftOne{0%{transform:translate(0,0) scale(1)}50%{transform:translate(35vw,22vh) scale(1.25)}100%{transform:translate(65vw,8vh) scale(.9)}}
+@keyframes driftTwo{0%{transform:translate(0,0) scale(.9)}50%{transform:translate(-30vw,-18vh) scale(1.2)}100%{transform:translate(-55vw,12vh) scale(1)}}
+@keyframes driftThree{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30vw,-35vh) scale(1.3)}}
+@keyframes beamOne{0%{transform:translateY(-25vh) rotate(-18deg)}100%{transform:translateY(45vh) rotate(-18deg)}}
+@keyframes beamTwo{0%{transform:translateY(30vh) rotate(-18deg)}100%{transform:translateY(-35vh) rotate(-18deg)}}
+@keyframes rise{0%{transform:translate3d(0,0,0);opacity:0}15%{opacity:.65}80%{opacity:.3}100%{transform:translate3d(var(--drift,35px),-110vh,0);opacity:0}}
+
+@media(max-width:380px){
+.page{padding:13px 10px 25px}
+.header{padding:13px 10px;gap:9px}
+.logo{width:47px;height:47px;font-size:24px}
+.header-text h1{font-size:17px}
+.subtitle{font-size:10px}
+.status{display:none}
+.model-grid{gap:8px}
+.model-button{gap:7px;padding:9px;min-height:72px}
+.model-icon{width:35px;height:35px;font-size:19px}
+.model-name,.model-translation{font-size:10px}
+.news-label{padding:0 8px}
+}
+@media(prefers-reduced-motion:reduce){
+*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+
+<body>
+
+<div class="animated-background" aria-hidden="true">
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <div class="ambient ambient-three"></div>
+  <div class="light-beam beam-one"></div>
+  <div class="light-beam beam-two"></div>
+  <div id="particleField"></div>
+</div>
+
+<main class="page" id="mainPage">
+
+  <div class="news-bar">
+    <div class="news-label"><span class="live-dot"></span> تنويه</div>
+    <div class="ticker">
+      <div class="ticker-track" aria-live="polite">
+        <span class="ticker-text">✦ تم صنع هذه المجسمات بواسطة بوت المساعد الجامعي • كلية طب الأسنان ✦</span>
+      </div>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="logo">🦷</div>
+    <div class="header-text">
+      <h1>المساعد الجامعي</h1>
+      <div class="subtitle">المكتبة التفاعلية للمجسمات التعليمية</div>
+      <button class="bot-id" id="copyBotButton" type="button" aria-label="نسخ معرف البوت">
+        <span>TOP5Q_bot</span><span>⧉</span>
+      </button>
+    </div>
+    <div class="status">3D LIBRARY</div>
+  </header>
+
+  <div class="section-title">
+    <h2>🧊 المجسمات التعليمية</h2>
+    <span>اختر مجسماً للعرض</span>
+  </div>
+
+  <section class="model-grid">
+
+    <button class="model-button" type="button" data-model="dentalStation">
+      <span class="model-icon">🦷</span>
+      <span class="model-info">
+        <span class="model-name">Dental Station</span>
+        <span class="model-translation">وحدة علاج الأسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+    <button class="model-button" type="button" data-model="dentalTool">
+      <span class="model-icon">🦷</span>
+      <span class="model-info">
+        <span class="model-name">Dental Tool – Teeth</span>
+        <span class="model-translation">أداة أسنان – نموذج الأسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+    <button class="model-button" type="button" data-model="toothDecay">
+      <span class="model-icon">🦷</span>
+      <span class="model-info">
+        <span class="model-name">Tooth Decay Progression</span>
+        <span class="model-translation">تسوس الأسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+    <button class="model-button" type="button" data-model="dentalSyringe">
+      <span class="model-icon">💉</span>
+      <span class="model-info">
+        <span class="model-name">Dental Syringe</span>
+        <span class="model-translation">محقنة أسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+    <button class="model-button" type="button" data-model="toothNumbering">
+      <span class="model-icon">🔢</span>
+      <span class="model-info">
+        <span class="model-name">Forensic Dental Reference</span>
+        <span class="model-translation">ترقيم الأسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+    <button class="model-button" type="button" data-model="dentalDrill">
+      <span class="model-icon">⚙️</span>
+      <span class="model-info">
+        <span class="model-name">Dental Drill</span>
+        <span class="model-translation">مثقاب الأسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+    <button class="model-button" type="button" data-model="dentalImplants">
+      <span class="model-icon">🦷</span>
+      <span class="model-info">
+        <span class="model-name">Dental Implants</span>
+        <span class="model-translation">زراعة أسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+    <button class="model-button" type="button" data-model="dentalClinic">
+      <span class="model-icon">🏥</span>
+      <span class="model-info">
+        <span class="model-name">Dental Clinic</span>
+        <span class="model-translation">عيادة أسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+    <button class="model-button" type="button" data-model="dentalSyringeGun">
+      <span class="model-icon">💉</span>
+      <span class="model-info">
+        <span class="model-name">Dental Syringe Gun</span>
+        <span class="model-translation">مسدس حقن الأسنان</span>
+      </span>
+      <span class="model-arrow">‹</span>
+    </button>
+
+  </section>
+
+  <footer class="footer">
+    <strong>تم صنع هذه المجسمات بواسطة بوت المساعد الجامعي</strong><br>
+    🦷 كلية طب الأسنان • <span dir="ltr">TOP5Q_bot</span>
+  </footer>
+</main>
+
+<section id="modelScreen" aria-label="عارض المجسم">
+  <div class="model-frame">
+    <iframe
+      id="modelFrame"
+      title="عارض المجسم"
+      src="about:blank"
+      allow="autoplay; fullscreen; xr-spatial-tracking"
+      allowfullscreen
+      webkitallowfullscreen
+      mozallowfullscreen>
+    </iframe>
+  </div>
+  <button class="close-btn" id="closeModelButton" type="button" aria-label="إغلاق المجسم">×</button>
+</section>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+
+const modelScreen = document.getElementById("modelScreen");
+const modelFrame = document.getElementById("modelFrame");
+const mainPage = document.getElementById("mainPage");
+const toast = document.getElementById("toast");
+const closeModelButton = document.getElementById("closeModelButton");
+const copyBotButton = document.getElementById("copyBotButton");
+
+const modelURLs = {
+  dentalStation:
+    "https://sketchfab.com/models/2e7ac50842eb49199b5fc0edec168df1/embed",
+
+  dentalTool:
+    "https://sketchfab.com/models/d4c765ad956d443ca9ad41f7ccee5d18/embed",
+
+  toothDecay:
+    "https://sketchfab.com/models/4aeb54b6f5ca4615b36cbdcdf398b27b/embed",
+
+  dentalSyringe:
+    "https://sketchfab.com/models/cc03d1e93640429ab9b918ad66be3f57/embed",
+
+  toothNumbering:
+    "https://sketchfab.com/models/06cfa42b7bae43568e51405a7c05ebfa/embed",
+
+  dentalDrill:
+    "https://sketchfab.com/models/8f495065b87942788d91e50f68f26765/embed",
+
+  dentalImplants:
+    "https://sketchfab.com/models/e0a7a8464b68473babe14655b61b4932/embed",
+
+  dentalClinic:
+    "https://sketchfab.com/models/c140d0839a2a4e629b68458161a8b4db/embed",
+
+  dentalSyringeGun:
+    "https://sketchfab.com/models/7f090b4029934d9ebc3a185555ad90bb/embed"
+};
+
+const modelTitles = {
+  dentalStation: "Dental Station",
+  dentalTool: "Dental Tool – Teeth",
+  toothDecay: "Tooth Decay Progression",
+  dentalSyringe: "Dental Syringe",
+  toothNumbering: "Forensic Dental Reference",
+  dentalDrill: "Dental Drill",
+  dentalImplants: "Dental Implants",
+  dentalClinic: "Dental Clinic",
+  dentalSyringeGun: "Dental Syringe Gun"
+};
+
+let toastTimer;
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () {
+    toast.classList.remove("show");
+  }, 2300);
+}
+
+function openModel(modelKey) {
+  const selectedURL = modelURLs[modelKey];
+
+  if (!selectedURL) {
+    showToast("هذا المجسم غير متوفر حالياً");
+    return;
+  }
+
+  modelFrame.title = modelTitles[modelKey] || "Dental model";
+  modelFrame.src = selectedURL;
+
+  modelScreen.classList.add("open");
+  mainPage.style.display = "none";
+  document.body.style.overflow = "hidden";
+}
+
+function closeModel() {
+  modelFrame.src = "about:blank";
+  modelScreen.classList.remove("open");
+  mainPage.style.display = "";
+  document.body.style.overflow = "";
+}
+
+async function copyBotID() {
+  try {
+    await navigator.clipboard.writeText("TOP5Q_bot");
+    showToast("تم نسخ المعرف ✓");
+  } catch (error) {
+    showToast("معرف البوت: TOP5Q_bot");
+  }
+}
+
+/* ربط جميع أزرار المجسمات */
+document.querySelectorAll("[data-model]").forEach(function (button) {
+  button.addEventListener("click", function () {
+    openModel(button.dataset.model);
+  });
+});
+
+/* زر إغلاق المجسم */
+closeModelButton.addEventListener("click", closeModel);
+
+/* زر نسخ معرف البوت */
+copyBotButton.addEventListener("click", copyBotID);
+
+/* الإغلاق باستخدام زر Escape */
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape" && modelScreen.classList.contains("open")) {
+    closeModel();
+  }
+});
+
+/* الجزيئات المتحركة بالخلفية */
+const particleField = document.getElementById("particleField");
+
+if (particleField &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+
+  const count = window.innerWidth < 500 ? 18 : 32;
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("span");
+    particle.className = "particle";
+
+    particle.style.left = Math.random() * 100 + "%";
+    particle.style.setProperty(
+      "--size",
+      (Math.random() * 2.5 + 1.5) + "px"
+    );
+    particle.style.setProperty(
+      "--duration",
+      (Math.random() * 10 + 9) + "s"
+    );
+    particle.style.setProperty(
+      "--delay",
+      (-Math.random() * 18) + "s"
+    );
+    particle.style.setProperty(
+      "--drift",
+      (Math.random() * 100 - 50) + "px"
+    );
+
+    fragment.appendChild(particle);
+  }
+
+  particleField.appendChild(fragment);
+}
+</script>
+
+</body>
+</html>
